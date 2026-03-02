@@ -1,7 +1,9 @@
 LingTeX
 =======
 
-LingTeX is a package of simple macros I use to write linguistics research in TeX. They all have been tested with XeTeX (which is the best environment for linguists!) but should work with any TeX systems. See `examples.tex` and `examples.pdf` for sample usage.
+LingTeX is a package of simple macros I use to write linguistics research in TeX. They all have been tested with XeTeX (which is the best environment for linguists!) but should work with any TeX systems. 
+
+Of these only `simplex` has been properly released (i.e., submitted to CTAN).
 
 dupe.py
 -------

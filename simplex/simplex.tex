@@ -1,0 +1,228 @@
+\documentclass{ltxdoc}
+\usepackage{simplex}
+
+\usepackage{doc}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\newcommand{\env}[1]{\texttt{#1}}
+
+\title{The \textsf{simplex} package\\[4pt]
+       \large Linguistic example environments for \LaTeX}
+\author{Kyle Gorman\\\small\texttt{kylebgorman@gmail.com}}
+\date{Version 1.0}
+
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The \textsf{simplex} package provides three numbered example environments
+for use in linguistics papers---\env{unlabeledexample}, \env{shortexample},
+and \env{example}---together with interlinear gloss macros (\cs{gll},
+\cs{glll}, \cs{glt}, \cs{gln}, \cs{glend}) adapted from
+\textsf{covington.sty} and \textsf{gloss.tex}.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Linguistics papers routinely include numbered examples, sometimes with
+descriptive labels, and frequently with word-by-word interlinear glosses
+paired with a free translation. The \textsf{simplex} package provides a
+minimal, self-contained set of macros for both tasks.
+
+The gloss alignment code is adapted from \textsf{gloss.tex}
+(v1.0, Marcel R.~van der Goot, 1991) and \textsf{covington.sty}
+(Michael Covington). The example counter environments are original.
+
+\section{Requirements}
+
+\textsf{simplex} requires \LaTeXe{} and automatically loads the
+\textsf{xparse} package (part of the standard \LaTeX{} distribution).
+
+\section{Numbered example environments}
+\label{sec:examples}
+
+All three environments share a single counter, \texttt{exampleno}, which
+increments automatically and is typeset as an Arabic numeral in
+parentheses, e.g.\ \textbf{(1)}, \textbf{(2)}, \ldots
+
+
+
+\DescribeEnv{unlabeledexample}
+The \env{unlabeledexample} environment produces a numbered example with
+no label. It takes no arguments.
+
+\begin{verbatim}
+\begin{unlabeledexample}
+The cat sat on the mat.
+\end{unlabeledexample}
+\end{verbatim}
+
+\begin{unlabeledexample}
+The cat sat on the mat.
+\end{unlabeledexample}
+
+\DescribeEnv{shortexample}
+The \env{shortexample} environment produces a numbered example whose
+optional label appears on the \emph{same line} as the number. The label
+is given as an optional argument in square brackets.
+
+\begin{verbatim}
+\begin{shortexample}[Substance-freeness of structural change]
+Features changed by rule application need not be present in the rule's
+structural environment.
+\end{shortexample}
+\end{verbatim}
+
+\begin{shortexample}[\textsc{Substance-freeness of Structural Change}]
+Features changed by rule application need not be present in the rule's
+structural environment.
+\end{shortexample}
+
+\DescribeEnv{example}
+The \env{example} environment is like \env{shortexample} except that the
+label appears on a \emph{separate line} above the example content,
+separated by a small vertical skip. This is useful when the label is long
+or when the content is multi-line (such as a gloss block).
+
+\begin{verbatim}
+\begin{example}[Assibilating perfect passive participles and agents]
+\begin{tabular}[H]{llllll}
+metere & `reap' & messus & `harvested' & messor & `reaper' \\
+fodere & `dig'  & fossus & `dug'       & fossor & `digger' \\
+\end{tabular}
+\end{example}
+\end{verbatim}
+
+\begin{example}[Assibilating perfect passive participles and agents]
+\begin{tabular}[H]{llllll}
+metere & `reap' & messus & `harvested' & messor & `reaper' \\
+fodere & `dig'  & fossus & `dug'       & fossor & `digger' \\
+\end{tabular}
+\end{example}
+
+\subsection{Cross-referencing}
+
+All three environments call \cs{refstepcounter}, so standard
+\cs{label}/\cs{ref} cross-referencing works normally.
+
+\begin{verbatim}
+\begin{unlabeledexample}
+The cat sat on the mat.
+\label{ex:basic}
+\end{unlabeledexample}
+
+See~(\ref{ex:basic}).
+\end{verbatim}
+
+\section{Interlinear gloss macros}
+\label{sec:gloss}
+
+\textsf{simplex} provides macros for typesetting word-aligned interlinear
+glosses of the kind common in linguistic fieldwork and typological work.
+The macros accept two or three lines of space-separated tokens and stack
+them vertically, aligning each column.
+
+\subsection{Two- and three-line glosses: \texttt{\textbackslash gll} and \texttt{\textbackslash glll}}
+
+\DescribeMacro{\gll}
+\cs{gll} introduces a two-line gloss: a source-language line followed by
+a morpheme-gloss line. The two lines are separated by a literal newline
+(end of line) inside the macro argument; each line ends with \verb|\\|.
+After the two gloss lines, supply a translation with \cs{glt} (or
+\cs{gln} if no translation is needed), and optionally close with
+\cs{glend}.
+
+\DescribeMacro{\glll}
+\cs{glll} is like \cs{gll} but accepts three aligned lines (typically:
+source, morpheme gloss, and a second-tier gloss or transliteration).
+
+\begin{verbatim}
+\begin{example}[\textsc{Pre-Liquid Shortening} bled by external sandhi]
+\gll clāmōr=ad cael-um                
+     shout=to  heaven-\textsc{acc.sg.}
+\glt `a shout to heaven' %(fragments of Ennius)
+% Omitted---no-op here.
+%\glend
+\end{example}
+\end{verbatim}
+
+\begin{example}[\textsc{Pre-Liquid Shortening} bled by external sandhi]
+\gll clāmōr=ad cael-um                
+     shout=to  heaven-\textsc{acc.sg.}
+\glt `a shout to heaven' %(fragments of Ennius)
+% Omitted---no-op here.
+%\glend
+\end{example}
+
+\subsection{Translation and closing macros}
+
+\DescribeMacro{\glt}
+\cs{glt} closes the aligned gloss block and introduces a free
+translation. It must appear after the final gloss line even when no
+translation is needed (pass an empty line in that case).
+
+\DescribeMacro{\gln}
+\cs{gln} is an alternative to \cs{glt} for use when no translation is
+wanted at all; it closes the gloss block without adding a newline.
+
+\DescribeMacro{\glend}
+\cs{glend} is a semantic no-op provided for readability; it marks the
+end of a gloss block.
+
+\subsection{Customizing gloss fonts}
+
+Three token-list hooks control the font applied to each line:
+
+\begin{center}
+\begin{tabular}{ll}
+\cs{eachwordone} & font for the source line (default: \cs{rm})\\
+\cs{eachwordtwo} & font for the first gloss line (default: \cs{rm})\\
+\cs{eachwordthree} & font for the second gloss line (default: \cs{rm})\\
+\end{tabular}
+\end{center}
+
+To italicize the source line, for example, add to your preamble:
+
+\begin{verbatim}
+\let\eachwordone=\it
+\end{verbatim}
+
+The inter-word spacing in gloss blocks is controlled by the skip register
+\cs{glossglue}, whose default value is \texttt{5pt plus 2pt minus 1pt}.
+
+\section{Known limitations}
+
+\begin{itemize}
+  \item The \texttt{exampleno} counter is not reset at chapter boundaries.
+        Users who want per-chapter numbering should add
+        \verb|\@addtoreset{exampleno}{chapter}| to their preamble.
+  \item \cs{gll} and \cs{glll} rely on active end-of-line characters and
+        may behave unexpectedly inside certain environments or
+        macro arguments.
+  \item Long words without spaces will not be broken across lines.
+\end{itemize}
+
+\section{License}
+
+This package is copyright \copyright\ Kyle Gorman and is distributed
+under the \LaTeX{} Project Public License, version~1.3 or later
+(\url{http://www.latex-project.org/lppl.txt}).
+The gloss alignment code in \texttt{simplex.sty} was adapted from 
+\textsf{gloss.tex} by Marcel R.~van der Goot (1991).
+Additional adaptations are derived from \textsf{covington.sty} by
+Michael Covington.
+
+\section{Version history}
+
+\begin{description}
+  \item[v1.0 (2026/03/02)] Initial public release.
+\end{description}
+
+\end{document}
