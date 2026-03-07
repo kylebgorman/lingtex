@@ -28,7 +28,9 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{simplex}[v1.0 Linguistic example environments]
 
-\RequirePackage{xparse}
+\IfFormatAtLeastTF {2020-10-01}{}{%
+  \RequirePackage{xparse}%
+}
 
 %% ---------------------------------------------------------------------------
 %% PART 1: Numbered example environments
@@ -65,68 +67,87 @@
 %%         Adapted from covington.sty and gloss.tex (van der Goot, 1991)
 %% ---------------------------------------------------------------------------
 
-% Font selection compatibility shim.
-% Thanks to Hans-Peter Kolb for the original macro (via covington.sty).
-\@ifundefined{new@fontshape}%
-  {\def\@selfnt{\ifx\@currsize\normalsize\@normalsize\else\@currsize\fi}}%
-  {\def\@selfnt{\selectfont}}
+% utility macros to check if names are free so we don't clobber things
+\newcommand\def@iffree[1]{%
+  \newcommand#1{}%
+  \def#1%
+}
+\newcommand\gdef@iffree[1]{%
+  \newcommand#1{}%
+  \gdef#1%
+}
+% borrow from latex's expl3 programming language
+% these create variables globally, but \usepackage{simplex} will almost
+% generally do that anyway
+\newcommand\newbox@iffree[1]{%
+  \UseName{box_new:N} #1%
+}
+\newcommand\newskip@iffree[1]{%
+  \UseName{skip_new:N} #1%
+}
+
 
 % \gll — 2-line interlinear gloss.
-\def\gll%
+\def@iffree\gll%
   {\def\baselinestretch{1}%
-   \@selfnt%
+   \selectfont%
    \bgroup
    \catcode`\^^M=12
    \twosent
   }
 
 % \glll — 3-line interlinear gloss.
-\def\glll%
+\def@iffree\glll%
   {\def\baselinestretch{1}%
-   \@selfnt%
+   \selectfont%
    \bgroup
    \catcode`\^^M=12
    \threesent
   }
 
 % \glt — Free translation line. Required to close a gloss block.
-\def\glt{\hskip-\glossglue\unhbox\gline\smallskip\newline\hskip 10em}
+\def@iffree\glt{\hskip-\glossglue\unhbox\gline\smallskip\newline\hskip 10em}
 
 % \gln — Like \glt but for use when no translation text follows.
-\def\gln{\hskip-\glossglue\unhbox\gline}
+\def@iffree\gln{\hskip-\glossglue\unhbox\gline}
 
 % \glend — Terminates the gloss environment (currently a no-op).
-\def\glend{}
+\def@iffree\glend{}
 
 %% Internal box registers
 
-\newbox\lineone
-\newbox\linetwo
-\newbox\linethree
-\newbox\wordone
-\newbox\wordtwo
-\newbox\wordthree
-\newbox\gline
+\newbox@iffree\lineone
+\newbox@iffree\linetwo
+\newbox@iffree\linethree
+\newbox@iffree\wordone
+\newbox@iffree\wordtwo
+\newbox@iffree\wordthree
+\newbox@iffree\gline
 
-\newskip\glossglue
+\newskip@iffree\glossglue
 \glossglue = 5pt plus 2pt minus 1pt
 
+\def@iffree\ifnotdone{}
 \newif\ifnotdone
 
 % Per-line font hooks. Override to change fonts, e.g.:
 %   \let\eachwordone=\textit
-\let\eachwordone=\rm
-\let\eachwordtwo=\rm
-\let\eachwordthree=\rm
+% 2-letter font switches should never be used in latex
+% they have not been defined in the format for decades
+% \rm works only if the class defines it 
+% *probably* you want \normalfont here? but I'm not sure.
+\let\eachwordone=\normalfont
+\let\eachwordtwo=\normalfont
+\let\eachwordthree=\normalfont
 
-\def\lastword#1#2#3%
+\def@iffree\lastword#1#2#3%
   {\setbox#2=\vbox{\unvbox#2%
                    \global\setbox#3=\lastbox
                   }%
    \ifvoid#3\global\setbox#3=\hbox{#1\strut{} }\fi
   }
 
-\def\testdone
+\def@iffree\testdone
   {\ifdim\ht\lineone=0pt
        \ifdim\ht\linetwo=0pt \notdonefalse
        \else\notdonetrue
@@ -137,7 +158,7 @@
 
 \begingroup
   \catcode`\^^M=12 \endlinechar=-1 % <--- Add a space and % here
-  \gdef\getwords(#1,#2)#3 #4^^M%
+  \gdef@iffree\getwords(#1,#2)#3 #4^^M%
     {\setbox#1=\vbox{\hbox{#2\strut#3 }%
                      \unvbox#1%
                     }%
@@ -147,8 +168,8 @@
      \fi
      \more(#1,#2)#4^^M%
     }
-  \gdef\donewords(#1,#2)^^M{}%
-  \gdef\twosent#1^^M#2^^M%
+  \gdef@iffree\donewords(#1,#2)^^M{}%
+  \gdef@iffree\twosent#1^^M#2^^M%
     {\getwords(\lineone,\eachwordone)#1 ^^M%
      \getwords(\linetwo,\eachwordtwo)#2 ^^M%
      \loop\lastword{\eachwordone}{\lineone}{\wordone}%
@@ -165,7 +186,7 @@
      \repeat
      \egroup
     }
-  \gdef\threesent#1^^M#2^^M#3^^M%
+  \gdef@iffree\threesent#1^^M#2^^M#3^^M%
     {\getwords(\lineone,\eachwordone)#1 ^^M%
      \getwords(\linetwo,\eachwordtwo)#2 ^^M%
      \getwords(\linethree,\eachwordthree)#3 ^^M%
