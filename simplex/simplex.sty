@@ -80,10 +80,10 @@
 % these create variables globally, but \usepackage{simplex} will almost
 % generally do that anyway
 \newcommand\newbox@iffree[1]{%
-  \UseName{box_new:N} #1%
+  \csname box_new:N\endcsname #1%
 }
 \newcommand\newskip@iffree[1]{%
-  \UseName{skip_new:N} #1%
+  \csname skip_new:N\endcsname #1%
 }
 
 
