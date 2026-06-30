@@ -26,11 +26,21 @@
 %%   by Michael Covington and others.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{simplex}[v1.0 Linguistic example environments]
+\ProvidesPackage{simplex}[v1.1 Linguistic example environments]
 
 \IfFormatAtLeastTF {2020-10-01}{}{%
   \RequirePackage{xparse}%
 }
+
+%% ---------------------------------------------------------------------------
+%% PART 0: Package options
+%% ---------------------------------------------------------------------------
+
+% resetchapter — reset the example counter at the start of each \chapter.
+% Requires a document class that defines \chapter (e.g., report, book).
+\newif\ifsimplex@resetchapter
+\DeclareOption{resetchapter}{\simplex@resetchaptertrue}
+\ProcessOptions\relax
 
 %% ---------------------------------------------------------------------------
 %% PART 1: Numbered example environments
@@ -38,6 +48,41 @@
 
 \newcounter{exampleno}
 \setcounter{exampleno}{0}
+
+\ifsimplex@resetchapter
+  \@addtoreset{exampleno}{chapter}%
+  % \theexampleno is what gets stored by \label (via \refstepcounter);
+  % it is *not* used for the in-place "(12)" numbering below, only for
+  % cross-referencing.
+  \renewcommand\theexampleno{\thechapter/\arabic{exampleno}}%
+\fi
+
+% \exref — refer to a numbered example by its \label. Same-chapter
+% references print as (12); cross-chapter references print as (2/12).
+% An optional letter postposes inside the parens: \exref[a]{label}
+% prints as (12a), or (2/12a) cross-chapter.
+% Reads the .aux-stored value directly rather than \edef-expanding
+% \ref, since \ref is \protected in current LaTeX (and non-expandable
+% under hyperref too), and so cannot be \edef-captured.
+\NewDocumentCommand\exref{O{}m}%
+  {\begingroup
+   \@ifundefined{r@#2}%
+     {\textbf{??}\@latex@warning{Reference `#2' undefined}}%
+     {\edef\sx@rawtarget{\csname r@#2\endcsname}%
+      \expandafter\sx@getfirst\sx@rawtarget
+      \ifsimplex@resetchapter
+        \expandafter\sx@splittarget\sx@target\sx@nil
+        \ifnum\sx@targetchap=\value{chapter}%
+          (\sx@targetnum#1)%
+        \else
+          (\sx@targetchap/\sx@targetnum#1)%
+        \fi
+      \else
+        (\sx@target#1)%
+      \fi}%
+  \endgroup}
+\def\sx@getfirst#1#2#3#4#5{\def\sx@target{#1}}
+\def\sx@splittarget#1/#2\sx@nil{\def\sx@targetchap{#1}\def\sx@targetnum{#2}}
 
 % unlabeledexample — a numbered example with no label.
 \newenvironment{unlabeledexample}%

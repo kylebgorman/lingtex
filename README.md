@@ -17,7 +17,7 @@ simplex
 
 While not necessarily ideal for glossing, phonology and morphology data is best rendered using the `tabular` environment. The `example` environment wraps tabular data, placing an example number and a user-supplied label at the top. 
 
-Usage: place `simplex.sty` in your working directory and add `\usepackage{simplex}` to your document preamble. This enables environments `example` and `unlabeledexample`. 
+Usage: place `simplex.sty` in your working directory and add `\usepackage{simplex}` to your document preamble. This enables environments `example`, `shortexample, and `unlabeledexample`.
 
 smooshedbib
 -----------

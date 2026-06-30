@@ -8,7 +8,7 @@
 \title{The \textsf{simplex} package\\[4pt]
        \large Linguistic example environments for \LaTeX}
 \author{Kyle Gorman\\\small\texttt{kylebgorman@gmail.com}}
-\date{Version 1.0}
+\date{Version 1.1}
 
 \EnableCrossrefs
 \CodelineIndex
@@ -43,12 +43,30 @@ The gloss alignment code is adapted from \textsf{gloss.tex}
 \textsf{simplex} requires \LaTeXe{} and automatically loads the
 \textsf{xparse} package (part of the standard \LaTeX{} distribution).
 
+\section{Package options}
+\label{sec:options}
+
+\DescribeMacro{resetchapter}
+The \texttt{resetchapter} option resets the \texttt{exampleno} counter
+at the start of each \cs{chapter}, so that numbering restarts at
+(1) in every chapter. It requires a document class that
+defines \cs{chapter} (e.g.\ \textsf{report} or \textsf{book}).
+
+\begin{verbatim}
+\usepackage[resetchapter]{simplex}
+\end{verbatim}
+
+Without this option (the default), \texttt{exampleno} simply
+increments throughout the document, as in v1.0. Enabling it also
+changes what \cs{exref} (\S\ref{sec:examples}) prints for
+cross-chapter references; see below.
+
 \section{Numbered example environments}
 \label{sec:examples}
 
 All three environments share a single counter, \texttt{exampleno}, which
 increments automatically and is typeset as an Arabic numeral in
-parentheses, e.g.\ \textbf{(1)}, \textbf{(2)}, \ldots
+parentheses, e.g.\ (1), (2), \ldots
 
 \DescribeEnv{unlabeledexample}
 The \env{unlabeledexample} environment produces a numbered example with
@@ -114,8 +132,41 @@ The cat sat on the mat.
 \label{ex:basic}
 \end{unlabeledexample}
 
-See~(\ref{ex:basic}).
+See (\ref{ex:basic}).
 \end{verbatim}
+
+\DescribeMacro{\exref}
+\cs{exref} is an alternative to \cs{ref} purpose-built for citing
+examples: it adds the surrounding parentheses itself, and---when the
+\texttt{resetchapter} option (\S\ref{sec:options}) is in
+effect---it automatically includes the chapter number for references
+that cross a chapter boundary.
+
+\begin{verbatim}
+See \exref{ex:basic}.
+\end{verbatim}
+
+With \texttt{resetchapter} \emph{not} given, \verb|\exref{ex:basic}|
+simply prints (1), matching \verb|(\ref{ex:basic})|. With
+\texttt{resetchapter} given, a reference to an example in the
+\emph{current} chapter still prints as (1), but a reference
+to an example in chapter~2 cited from a later chapter prints as
+(2/1).
+
+\cs{exref} also takes an optional argument that postposes a letter
+inside the parentheses, for referring to a sub-part of an example:
+
+\begin{verbatim}
+See \exref[a]{ex:basic}.
+\end{verbatim}
+
+\noindent which prints (1a), or (2/1a) for a
+cross-chapter reference under \texttt{resetchapter}.
+
+\cs{exref} reads the label's stored value directly rather than via
+\cs{ref}, so it is unaffected by packages (such as \textsf{hyperref})
+that redefine \cs{ref}; it does not currently add a hyperlink of its
+own.
 
 \section{Interlinear gloss macros}
 \label{sec:gloss}
@@ -196,9 +247,9 @@ The inter-word spacing in gloss blocks is controlled by the skip register
 \section{Known limitations}
 
 \begin{itemize}
-  \item The \texttt{exampleno} counter is not reset at chapter boundaries.
-        Users who want per-chapter numbering should add
-        \verb|\@addtoreset{exampleno}{chapter}| to their preamble.
+  \item Per-chapter numbering requires the \texttt{resetchapter}
+        option (\S\ref{sec:options}); it is off by default for
+        backward compatibility with v1.0 documents.
   \item \cs{gll} and \cs{glll} rely on active end-of-line characters and
         may behave unexpectedly inside certain environments or
         macro arguments.
@@ -218,6 +269,9 @@ Michael Covington.
 \section{Version history}
 
 \begin{description}
+  \item[v1.1 (2026/06/30)] Added the \texttt{resetchapter} package
+    option and the \cs{exref} cross-referencing macro (with optional
+    postposed letter).
   \item[v1.0 (2026/03/02)] Initial public release.
 \end{description}
 
