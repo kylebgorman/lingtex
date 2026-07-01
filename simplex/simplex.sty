@@ -61,15 +61,14 @@
 % references print as (12); cross-chapter references print as (2/12).
 % An optional letter postposes inside the parens: \exref[a]{label}
 % prints as (12a), or (2/12a) cross-chapter.
-% Reads the .aux-stored value directly rather than \edef-expanding
-% \ref, since \ref is \protected in current LaTeX (and non-expandable
-% under hyperref too), and so cannot be \edef-captured.
+% Reads the .aux-stored value directly using \let rather than \edef
+% to safely handle unexpandable commands in hyperref payload labels.
 \NewDocumentCommand\exref{O{}m}%
   {\begingroup
    \@ifundefined{r@#2}%
      {\textbf{??}\@latex@warning{Reference `#2' undefined}}%
-     {\edef\sx@rawtarget{\csname r@#2\endcsname}%
-      \expandafter\sx@getfirst\sx@rawtarget
+     {\expandafter\let\expandafter\sx@rawtarget\csname r@#2\endcsname
+      \expandafter\sx@getfirst\sx@rawtarget\@nil
       \ifsimplex@resetchapter
         \expandafter\sx@splittarget\sx@target\sx@nil
         \edef\sx@curchap{\thechapter}%
@@ -82,7 +81,8 @@
         (\sx@target#1)%
       \fi}%
   \endgroup}
-\def\sx@getfirst#1#2#3#4#5{\def\sx@target{#1}}
+
+\def\sx@getfirst#1#2\@nil{\def\sx@target{#1}}
 \def\sx@splittarget#1/#2\sx@nil{\def\sx@targetchap{#1}\def\sx@targetnum{#2}}
 
 % unlabeledexample — a numbered example with no label.
