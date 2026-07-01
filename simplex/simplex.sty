@@ -72,7 +72,8 @@
       \expandafter\sx@getfirst\sx@rawtarget
       \ifsimplex@resetchapter
         \expandafter\sx@splittarget\sx@target\sx@nil
-        \ifnum\sx@targetchap=\value{chapter}%
+        \edef\sx@curchap{\thechapter}%
+        \ifx\sx@targetchap\sx@curchap
           (\sx@targetnum#1)%
         \else
           (\sx@targetchap/\sx@targetnum#1)%
